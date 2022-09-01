@@ -166,6 +166,23 @@ public class CodeGenerateServiceImpl implements CodeGenerateService {
                 callback.setFileName(tableInfo.getName() + "Default.java");
                 // 默认路径
                 callback.setSavePath(tableInfo.getSavePath());
+                if("entity".equalsIgnoreCase(template.getName()) && !StringUtils.isEmpty(tableInfo.getSaveEntityPacakge())){
+                    String packageName = tableInfo.getSaveEntityPacakge();
+                    // 获取基本路径
+                    String path = tableInfo.getSavePath().replaceAll("java.*","java");
+                    // 兼容Linux路径
+                    path = path.replace("\\", "/");
+                    // 如果存在包路径，添加包路径
+                    if (!StringUtils.isEmpty(packageName)) {
+                        path += "/" + packageName.replace(".", "/");
+                    }
+
+                    callback.setSavePath(path);
+                    callback.setFileName(tableInfo.getName() + ".java");
+
+                    tableInfo.setSavePackageName(tableInfo.getSaveEntityPacakge());
+                    param.put("entityCustomPath", true);
+                }
                 // 设置回调对象
                 param.put("callback", callback);
                 // 开始生成

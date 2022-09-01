@@ -91,6 +91,8 @@ public class SelectSavePath extends DialogWrapper {
      * 弹框全否复选框
      */
     private JCheckBox titleRefuseCheckBox;
+    private JTextField entityPacakgeField;
+    private JButton entityPackageChooseButton;
     /**
      * 数据缓存工具类
      */
@@ -202,6 +204,27 @@ public class SelectSavePath extends DialogWrapper {
                     refreshPath();
                 }
             });
+
+            //选择路径
+            entityPackageChooseButton.addActionListener(e -> {
+                try {
+                    Constructor<?> constructor = cls.getConstructor(String.class, Project.class);
+                    Object dialog = constructor.newInstance("Package Chooser", project);
+                    // 显示窗口
+                    Method showMethod = cls.getMethod("show");
+                    showMethod.invoke(dialog);
+                    // 获取选中的包名
+                    Method getSelectedPackageMethod = cls.getMethod("getSelectedPackage");
+                    Object psiPackage = getSelectedPackageMethod.invoke(dialog);
+                    if (psiPackage != null) {
+                        Method getQualifiedNameMethod = psiPackage.getClass().getMethod("getQualifiedName");
+                        String packageName = (String) getQualifiedNameMethod.invoke(psiPackage);
+                        entityPacakgeField.setText(packageName);
+                    }
+                } catch (NoSuchMethodException | IllegalAccessException | InstantiationException | InvocationTargetException e1) {
+                    ExceptionUtil.rethrow(e1);
+                }
+            });
         } catch (ClassNotFoundException e) {
             // 没有PackageChooserDialog，并非支持Java的IDE，禁用相关UI组件
             packageField.setEnabled(false);
@@ -221,6 +244,7 @@ public class SelectSavePath extends DialogWrapper {
                 pathField.setText(virtualFile.getPath());
             }
         });
+
     }
 
     private void refreshData() {
@@ -286,15 +310,8 @@ public class SelectSavePath extends DialogWrapper {
         savePath = savePath.replace("\\", "/");
         // 保存路径使用相对路径
         String basePath = project.getBasePath();
-        if (!StringUtils.isEmpty(basePath) && savePath.startsWith(basePath)) {
-            if (savePath.length() > basePath.length()) {
-                if ("/".equals(savePath.substring(basePath.length(), basePath.length() + 1))) {
-                    savePath = savePath.replace(basePath, ".");
-                }
-            } else {
-                savePath = savePath.replace(basePath, ".");
-            }
-        }
+        savePath = getRelativePath(savePath, basePath);
+
         // 保存配置
         TableInfo tableInfo;
         if(!entityMode) {
@@ -303,6 +320,7 @@ public class SelectSavePath extends DialogWrapper {
             tableInfo = tableInfoService.getTableInfo(cacheDataUtils.getSelectPsiClass());
         }
         tableInfo.setSavePath(savePath);
+        tableInfo.setSaveEntityPacakge(entityPacakgeField.getText());
         tableInfo.setSavePackageName(packageField.getText());
         tableInfo.setPreName(preField.getText());
         tableInfo.setTemplateGroupName(templateSelectComponent.getselectedGroupName());
@@ -315,6 +333,19 @@ public class SelectSavePath extends DialogWrapper {
 
         // 生成代码
         codeGenerateService.generate(selectTemplateList, getGenerateOptions());
+    }
+
+    private static String getRelativePath(String savePath, String basePath) {
+        if (!StringUtils.isEmpty(basePath) && savePath.startsWith(basePath)) {
+            if (savePath.length() > basePath.length()) {
+                if ("/".equals(savePath.substring(basePath.length(), basePath.length() + 1))) {
+                    savePath = savePath.replace(basePath, ".");
+                }
+            } else {
+                savePath = savePath.replace(basePath, ".");
+            }
+        }
+        return savePath;
     }
 
     /**

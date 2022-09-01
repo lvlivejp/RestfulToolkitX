@@ -65,6 +65,10 @@ public class TableInfo {
      */
     private String savePath;
     /**
+     * entity保存路径
+     */
+    private String saveEntityPacakge;
+    /**
      * 保存的model名称
      */
     private String saveModelName;

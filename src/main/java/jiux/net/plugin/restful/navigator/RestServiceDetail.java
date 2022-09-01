@@ -337,7 +337,7 @@ public class RestServiceDetail extends JBPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() > 1) {
-                    CopyPasteManager.getInstance().setContents(new StringSelection(jTextArea.getText()));
+//                    CopyPasteManager.getInstance().setContents(new StringSelection(jTextArea.getText()));
                 }
             }
         });
