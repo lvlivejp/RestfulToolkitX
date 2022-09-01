@@ -17,6 +17,7 @@ import com.intellij.util.OpenSourceUtil;
 import gnu.trove.THashMap;
 import java.awt.event.InputEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Icon;
@@ -44,6 +45,11 @@ public class RestServiceStructure extends SimpleTreeStructure {
     private SimpleTree myTree;
     private RootNode myRoot = new RootNode();
     private int serviceCount = 0;
+
+    public static Map<String, String> requestParamsMap = new HashMap<>();
+    public static Map<String, String> requestHeaderMap = new HashMap<>();
+    public static Map<String, String> requestBodyMap = new HashMap<>();
+
 
     public RestServiceStructure(Project project,
                                 RestServiceProjectsManager projectsManager,
@@ -369,6 +375,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
             showServiceDetail(selectedNode.myServiceItem);
         }
 
+
         /**
          * 显示服务详情，url
          */
@@ -379,6 +386,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
             String method = serviceItem.getMethod() != null ? String.valueOf(serviceItem.getMethod()) : HttpMethod.GET.name();
             myRestServiceDetail.setMethodValue(method);
             myRestServiceDetail.setUrlValue(serviceItem.getFullUrl());
+
 
             String requestParams = "";
             String requestBodyJson = "";
@@ -397,10 +405,16 @@ public class RestServiceStructure extends SimpleTreeStructure {
                 }
 
             }
-
+            String text = requestParamsMap.get(method + "_" + serviceItem.getFullUrl());
+            if (StringUtils.isNotBlank(text)) {
+                requestParams = text;
+            }
             myRestServiceDetail.addRequestParamsTab(requestParams);
 
-
+            String requestBody = requestBodyMap.get(method + "_" + serviceItem.getFullUrl());
+            if (StringUtils.isNotBlank(requestBody)) {
+                requestBodyJson = requestBody;
+            }
             if (StringUtils.isNotBlank(requestBodyJson)) {
                 myRestServiceDetail.addRequestBodyTabPanel(requestBodyJson);
             }

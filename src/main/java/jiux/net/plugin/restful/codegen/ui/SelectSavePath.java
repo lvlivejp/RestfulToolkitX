@@ -1,5 +1,9 @@
 package jiux.net.plugin.restful.codegen.ui;
 
+import com.intellij.ide.util.TreeFileChooser;
+import com.intellij.ide.util.TreeFileChooserFactory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.impl.source.PsiJavaFileImpl;
 import jiux.net.plugin.restful.codegen.constants.StrState;
 import jiux.net.plugin.restful.codegen.dict.GlobalDict;
 import jiux.net.plugin.restful.codegen.dto.GenerateOptions;
@@ -24,6 +28,7 @@ import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.util.ExceptionUtil;
 import org.jetbrains.annotations.Nullable;
+import com.intellij.ide.util.TreeClassChooserFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -93,6 +98,9 @@ public class SelectSavePath extends DialogWrapper {
     private JCheckBox titleRefuseCheckBox;
     private JTextField entityPacakgeField;
     private JButton entityPackageChooseButton;
+    private JTextField mapperParentClass;
+    private JLabel mapperParentClassLabel;
+    private JButton mapperParentClassChooseButton;
     /**
      * 数据缓存工具类
      */
@@ -244,6 +252,22 @@ public class SelectSavePath extends DialogWrapper {
                 pathField.setText(virtualFile.getPath());
             }
         });
+
+        try {
+            Class<?> clsTree = Class.forName("com.intellij.ide.util.TreeClassChooserFactory");
+            //选择Mapper继承类
+            mapperParentClassChooseButton.addActionListener(e -> {
+                TreeFileChooserFactory instance = TreeFileChooserFactory.getInstance(project);
+                TreeFileChooser.PsiFileFilter fileFilter = file -> file.getName().endsWith(".java");
+                TreeFileChooser javaFileChooser = instance.createFileChooser("java文件选择器", null, null, fileFilter);
+                javaFileChooser.showDialog();
+                PsiFile selectedFile = javaFileChooser.getSelectedFile();
+                mapperParentClass.setText(((PsiJavaFileImpl) selectedFile).getPackageName() +"."+selectedFile.getName().substring(0,selectedFile.getName().indexOf(".")) );
+            });
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
 
     }
 

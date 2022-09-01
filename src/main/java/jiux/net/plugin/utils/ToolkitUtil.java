@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class ToolkitUtil {
@@ -146,7 +147,7 @@ public class ToolkitUtil {
 
     @NotNull
     public static Map<String, String> textToParamMap(String text) {
-        Map<String, String> paramMap = new HashMap<>();
+        Map<String, String> paramMap = new LinkedHashMap<>();
         String paramText = text;
         String[] lines = paramText.split("\n");
 

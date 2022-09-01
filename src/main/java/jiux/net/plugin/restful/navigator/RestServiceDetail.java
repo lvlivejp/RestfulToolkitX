@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.intellij.openapi.editor.colors.FontPreferences;
-import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.progress.ProgressManager;
 import com.intellij.openapi.progress.Task;
@@ -19,7 +18,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -42,6 +40,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.jetbrains.annotations.NotNull;
 
+import static jiux.net.plugin.restful.navigator.RestServiceStructure.*;
 
 public class RestServiceDetail extends JBPanel {
 
@@ -154,10 +153,13 @@ public class RestServiceDetail extends JBPanel {
                                         url += "?" + params;
                                     }
                                 }
+                                requestParamsMap.put(methodField.getText()+"_"+urlField.getText(),params);
+
                             }
 
                             if (requestHeaderTextArea != null) {
                                 String requestHeaderText = requestHeaderTextArea.getText();
+                                requestHeaderMap.put(methodField.getText()+"_"+urlField.getText(),requestHeaderText);
                                 headerMap = ToolkitUtil.textToHeaderMap(requestHeaderText);
                             }
 
@@ -166,6 +168,7 @@ public class RestServiceDetail extends JBPanel {
                             //NOTICE: Send Request.
                             String response = null;
                             if (requestBodyTextArea != null && StringUtils.isNotBlank(requestBodyTextArea.getText())) {
+                                requestBodyMap.put(methodField.getText()+"_"+urlField.getText(),requestBodyTextArea.getText());
                                 response = RequestHelper.postRequestBodyWithJson(url, requestBodyTextArea.getText(),
                                     headerMap);
                             } else {
