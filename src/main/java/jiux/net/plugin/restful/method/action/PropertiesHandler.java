@@ -12,6 +12,8 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PropertiesHandler {
 
@@ -161,6 +163,21 @@ public class PropertiesHandler {
             }
         }
 
+        while (true){
+            Matcher matcher = Pattern.compile("\\$\\{(.*)\\}").matcher(contextPath);
+            if(matcher.find()){
+                String contextPathPropertyOrigin = matcher.group();
+                String contextPathProperty = matcher.group(1);
+                String replaceContextPathProperty = findPropertyValue(contextPathProperty, null);
+                if(replaceContextPathProperty!=null){
+                    contextPath = contextPath.replace(contextPathPropertyOrigin,replaceContextPathProperty);
+                }
+            }else{
+                break;
+            }
+        }
+
+
         return contextPath != null ? contextPath : "";
 
     }
@@ -201,6 +218,11 @@ public class PropertiesHandler {
         PsiFile[] applicationProperties = FilenameIndex.getFilesByName(module.getProject(),
                 fileName,
                 GlobalSearchScope.moduleScope(module));
+        if(applicationProperties.length == 0){
+            applicationProperties = FilenameIndex.getFilesByName(module.getProject(),
+                    fileName,
+                    GlobalSearchScope.projectScope(module.getProject()));
+        }
 
         if (applicationProperties.length > 0) {
             psiFile = applicationProperties[0];
