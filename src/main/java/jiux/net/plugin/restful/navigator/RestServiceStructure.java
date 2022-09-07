@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiMethod;
+import com.intellij.psi.impl.source.PsiClassImpl;
 import com.intellij.ui.treeStructure.CachingSimpleNode;
 import com.intellij.ui.treeStructure.SimpleNode;
 import com.intellij.ui.treeStructure.SimpleTree;
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import javax.swing.Icon;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -270,7 +272,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
     }
 
     public class ProjectNode extends BaseSimpleNode {
-        List<ServiceNode> serviceNodes = new ArrayList<>();
+        List<ControllerNode> controllerNodes = new ArrayList<>();
         RestServiceProject myProject;
 
 
@@ -286,9 +288,10 @@ public class RestServiceStructure extends SimpleTreeStructure {
         }
 
         private void updateServiceNodes(List<RestServiceItem> serviceItems) {
-            serviceNodes.clear();
-            for (RestServiceItem serviceItem : serviceItems) {
-                serviceNodes.add(new ServiceNode(this, serviceItem));
+            controllerNodes.clear();
+            Map<String, List<RestServiceItem>> collect = serviceItems.stream().collect(Collectors.groupingBy(e -> ((PsiClassImpl) e.getPsiElement().getParent()).getName()));
+            for (Map.Entry<String, List<RestServiceItem>> entry : collect.entrySet()) {
+                controllerNodes.add(new ControllerNode(this, entry));
             }
            /* for (int i = 0; i < 4; i++) {
                 serviceNodes.add(new ServiceNode(this));
@@ -305,12 +308,70 @@ public class RestServiceStructure extends SimpleTreeStructure {
 
         @Override
         protected SimpleNode[] buildChildren() {
-            return serviceNodes.toArray(new SimpleNode[serviceNodes.size()]);
+            return controllerNodes.toArray(new SimpleNode[controllerNodes.size()]);
         }
 
         @Override
         public String getName() {
             return myProject.getModuleName();
+        }
+
+
+        @Override
+        @Nullable
+        @NonNls
+        protected String getActionId() {
+            return "Toolkit.RefreshServices";
+        }
+/*
+        @Override
+        @Nullable
+        @NonNls
+        protected String getMenuId() {
+            return "Toolkit.ReimportServices";
+        }*/
+
+        @Override
+        public void handleSelection(SimpleTree tree) {
+//            System.out.println("ProjectNode handleSelection");
+            resetRestServiceDetail();
+        }
+
+        @Override
+        public void handleDoubleClickOrEnter(SimpleTree tree, InputEvent inputEvent) {
+//            System.out.println("ProjectNode handleDoubleClickOrEnter");
+        }
+    }
+
+    public class ControllerNode extends BaseSimpleNode {
+        List<ServiceNode> serviceNodes = new ArrayList<>();
+
+        String controllerName=null;
+
+        public ControllerNode(SimpleNode parent,Map.Entry<String, List<RestServiceItem>> entry) {
+            super(parent);
+
+            getTemplatePresentation().setIcon(ToolkitIcons.MODULE);
+            setIcon(ToolkitIcons.MODULE); //兼容 IDEA 2016
+            controllerName = entry.getKey();
+            updateServiceNodes(entry.getValue());
+        }
+
+        private void updateServiceNodes(List<RestServiceItem> serviceItems) {
+            serviceNodes.clear();
+            for (RestServiceItem serviceItem : serviceItems) {
+                serviceNodes.add(new ServiceNode(this, serviceItem));
+            }
+        }
+
+        @Override
+        protected SimpleNode[] buildChildren() {
+            return serviceNodes.toArray(new SimpleNode[serviceNodes.size()]);
+        }
+
+        @Override
+        public String getName() {
+            return controllerName;
         }
 
 
