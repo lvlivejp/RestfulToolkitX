@@ -243,6 +243,6 @@ public class RequestHelper {
             return JsonUtils.format(result);
         }
 
-        return "";
+        return result;
     }
 }
