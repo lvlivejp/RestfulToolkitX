@@ -10,6 +10,8 @@
         <productivityFeaturesProvider
                 implementation="jiux.net.plugin.restful.statistics.RestfulToolkitFeaturesProvider"/>
         <tipAndTrick feature-id="navigation.popup.service" file="GotoService.html"/>
+        <codeInsight.lineMarkerProvider language="JAVA"
+                                        implementationClass="jiux.net.plugin.restful.icon.HaloLineMarker"/>
     </extensions>
 
 </idea-plugin>

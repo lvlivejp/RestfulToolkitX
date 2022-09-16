@@ -27,6 +27,7 @@ import java.awt.Rectangle;
 import java.net.URL;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import jiux.net.RestfulToolkitBundle;
 import jiux.net.plugin.restful.common.ToolkitIcons;
@@ -107,6 +108,12 @@ public class RestServicesNavigator extends AbstractProjectComponent
         });
     }
 
+    public void show(String projectName, String controllerName, String url){
+        if (myToolWindow != null) {
+            myToolWindow.show();
+            myTree.setSelectionPath(new TreePath("/activation/activate"));
+        }
+    }
     private void initToolWindow() {
         final ToolWindowManagerEx manager = ToolWindowManagerEx.getInstanceEx(myProject);
         myToolWindow = (ToolWindowEx) manager.getToolWindow(TOOL_WINDOW_ID);
