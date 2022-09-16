@@ -17,10 +17,7 @@ import com.intellij.ui.treeStructure.SimpleTreeStructure;
 import com.intellij.util.OpenSourceUtil;
 import gnu.trove.THashMap;
 import java.awt.event.InputEvent;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.swing.Icon;
 import javax.swing.tree.DefaultTreeModel;
@@ -256,6 +253,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
                 ProjectNode projectNode = new ProjectNode(this, project);
                 projectNodes.add(projectNode);
             }
+            projectNodes = projectNodes.stream().sorted(Comparator.comparing(e->e.getName())).collect(Collectors.toList());
 
 //                projectNode.updateServiceNodes();
 
@@ -293,6 +291,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
             for (Map.Entry<String, List<RestServiceItem>> entry : collect.entrySet()) {
                 controllerNodes.add(new ControllerNode(this, entry));
             }
+            controllerNodes = controllerNodes.stream().sorted(Comparator.comparing(e->e.getName())).collect(Collectors.toList());
            /* for (int i = 0; i < 4; i++) {
                 serviceNodes.add(new ServiceNode(this));
             }*/
@@ -362,6 +361,7 @@ public class RestServiceStructure extends SimpleTreeStructure {
             for (RestServiceItem serviceItem : serviceItems) {
                 serviceNodes.add(new ServiceNode(this, serviceItem));
             }
+            serviceNodes = serviceNodes.stream().sorted(Comparator.comparing(e->e.getName())).collect(Collectors.toList());
         }
 
         @Override
