@@ -232,11 +232,14 @@ public class RestServiceDetail extends JBPanel {
     }
 
 
-    public void addRequestParamsTab(String requestParams) {
+    public void addRequestParamsTab(String requestParams,String requestHeaders) {
         if (requestHeaderTextArea == null) {
             requestHeaderTextArea = createTextArea("key:value", SyntaxConstants.SYNTAX_STYLE_NONE);
         } else {
             requestHeaderTextArea.setText("key:value");
+        }
+        if(StringUtils.isNotEmpty(requestHeaders)){
+            requestHeaderTextArea.setText(requestHeaders);
         }
 
         addHeaderTabbedPane("Headers", requestHeaderTextArea);

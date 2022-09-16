@@ -470,7 +470,9 @@ public class RestServiceStructure extends SimpleTreeStructure {
             if (StringUtils.isNotBlank(text)) {
                 requestParams = text;
             }
-            myRestServiceDetail.addRequestParamsTab(requestParams);
+            String headerText = requestHeaderMap.get(method + "_" + serviceItem.getFullUrl());
+
+            myRestServiceDetail.addRequestParamsTab(requestParams,headerText);
 
             String requestBody = requestBodyMap.get(method + "_" + serviceItem.getFullUrl());
             if (StringUtils.isNotBlank(requestBody)) {
