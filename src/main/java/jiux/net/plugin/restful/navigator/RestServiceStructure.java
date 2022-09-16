@@ -40,6 +40,11 @@ public class RestServiceStructure extends SimpleTreeStructure {
     private final RestServiceProjectsManager myProjectsManager;
     private final Map<RestServiceProject, ProjectNode> myProjectToNodeMapping = new THashMap<>();
     RestServiceDetail myRestServiceDetail;
+
+    public SimpleTreeBuilder getMyTreeBuilder() {
+        return myTreeBuilder;
+    }
+
     private SimpleTreeBuilder myTreeBuilder;
     private SimpleTree myTree;
     private RootNode myRoot = new RootNode();

@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.markup.GutterIconRenderer;
 import com.intellij.openapi.util.IconLoader;
 import com.intellij.psi.PsiAnnotation;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiIdentifier;
 import com.intellij.psi.PsiMethod;
 import com.intellij.psi.impl.source.PsiClassImpl;
 import jiux.net.plugin.restful.navigator.RestServicesNavigator;
@@ -15,6 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class HaloLineMarker implements LineMarkerProvider {
     @Override
@@ -30,17 +33,40 @@ public class HaloLineMarker implements LineMarkerProvider {
             PsiMethod field = ((PsiMethod) psiElement);
             PsiAnnotation psiAnnotation = field.getAnnotation(anno);
             String controllerName = ((PsiClassImpl) field.getParent()).getName();
-            String projectName = field.getProject().getName();
             PsiAnnotation annotation = ((PsiClassImpl) field.getParent()).getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
             String requestMapping = annotation.getText();
-            lineMarkerInfo = new LineMarkerInfo<>(psiAnnotation, psiAnnotation.getTextRange(), IconLoader.findIcon("/icons/service.png"),
-                    psiAnnotationFunc -> "jump to restfulTool",
-                    (GutterIconNavigationHandler) (e, elt) -> {
-                        String url = elt.getText();
-                        url = requestMapping + url;
-                        RestServicesNavigator.getInstance(elt.getProject()).show(projectName,controllerName,url);
-                    },// ➊
-                    GutterIconRenderer.Alignment.LEFT);
+            Pattern r = Pattern.compile("\"(.*)\"");
+            Matcher m = r.matcher(requestMapping);
+            if (m.find()) {
+                requestMapping =  m.group(1);
+            }
+            if(!requestMapping.startsWith("/")){
+                requestMapping = "/"  + requestMapping;
+            }
+            String url = psiAnnotation.getText();
+            Pattern urlPattern = Pattern.compile("\"(.*)\"");
+            Matcher urlMatcher = urlPattern.matcher(url);
+            if (urlMatcher.find()) {
+                url =  urlMatcher.group(1);
+            }
+            if(!url.startsWith("/")){
+                url = "/"  + url;
+            }
+            url = requestMapping + url;
+
+            String finalUrl = url;
+            for (PsiElement child : psiElement.getChildren()) {
+                if(child instanceof PsiIdentifier){
+                    lineMarkerInfo = new LineMarkerInfo<>(child, child.getTextRange(),
+                            IconLoader.findIcon("/icons/service.png"),
+                            psiAnnotationFunc -> child.getText() + "jump to restfulTool",
+                            (GutterIconNavigationHandler) (e, elt) -> {
+                                RestServicesNavigator.getInstance(elt.getProject()).show(controllerName, finalUrl);
+                            },// ➊
+                            GutterIconRenderer.Alignment.LEFT);
+                }
+            }
+
         } catch (Exception e) {
             e.printStackTrace(); // ➋
         }

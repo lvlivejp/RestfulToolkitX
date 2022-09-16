@@ -20,11 +20,13 @@ import com.intellij.openapi.wm.ex.ToolWindowManagerEx;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
+import com.intellij.ui.treeStructure.SimpleNode;
 import com.intellij.ui.treeStructure.SimpleTree;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.net.URL;
+import java.util.Arrays;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.tree.TreePath;
@@ -108,10 +110,26 @@ public class RestServicesNavigator extends AbstractProjectComponent
         });
     }
 
-    public void show(String projectName, String controllerName, String url){
+    public void show(String controllerName, String url){
         if (myToolWindow != null) {
             myToolWindow.show();
-            myTree.setSelectionPath(new TreePath("/activation/activate"));
+            if(myStructure == null){
+                scheduleStructureUpdate();
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            for (SimpleNode projectNode : myStructure.getRootElement().getChildren()) {
+                SimpleNode controllerNode = Arrays.stream(projectNode.getChildren()).filter(e -> e.getName().equals(controllerName)).findFirst().orElse(null);
+                if(controllerNode == null){
+                    continue;
+                }
+                SimpleNode urlNode = Arrays.stream(controllerNode.getChildren()).filter(e -> e.getName().equals(url)).findFirst().orElse(null);
+                myTree.setSelectedNode(myStructure.getMyTreeBuilder(),urlNode,true);
+            }
+
         }
     }
     private void initToolWindow() {
