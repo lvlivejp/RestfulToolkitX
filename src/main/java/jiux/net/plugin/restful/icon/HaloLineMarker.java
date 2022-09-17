@@ -43,6 +43,9 @@ public class HaloLineMarker implements LineMarkerProvider {
             if(!requestMapping.startsWith("/")){
                 requestMapping = "/"  + requestMapping;
             }
+            if(requestMapping.endsWith("/")){
+                requestMapping = StringUtils.removeEnd(requestMapping,"/");
+            }
             String url = psiAnnotation.getText();
             Pattern urlPattern = Pattern.compile("\"(.*)\"");
             Matcher urlMatcher = urlPattern.matcher(url);

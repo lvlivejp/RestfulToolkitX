@@ -114,12 +114,8 @@ public class RestServicesNavigator extends AbstractProjectComponent
         if (myToolWindow != null) {
             myToolWindow.show();
             if(myStructure == null){
-                scheduleStructureUpdate();
-                try {
-                    Thread.sleep(1000L);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
+                this.initStructure();
+                myStructure.update();
             }
             for (SimpleNode projectNode : myStructure.getRootElement().getChildren()) {
                 SimpleNode controllerNode = Arrays.stream(projectNode.getChildren()).filter(e -> e.getName().equals(controllerName)).findFirst().orElse(null);
