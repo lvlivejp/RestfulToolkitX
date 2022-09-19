@@ -113,6 +113,7 @@ public class RestServicesNavigator extends AbstractProjectComponent
     public void show(String controllerName, String url){
         if (myToolWindow != null) {
             myToolWindow.show();
+
             if(myStructure == null){
                 this.initStructure();
                 myStructure.update();
@@ -124,8 +125,8 @@ public class RestServicesNavigator extends AbstractProjectComponent
                 }
                 SimpleNode urlNode = Arrays.stream(controllerNode.getChildren()).filter(e -> e.getName().equals(url)).findFirst().orElse(null);
                 myTree.setSelectedNode(myStructure.getMyTreeBuilder(),urlNode,true);
+                break;
             }
-
         }
     }
     private void initToolWindow() {
