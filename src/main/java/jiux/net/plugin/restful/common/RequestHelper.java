@@ -180,7 +180,7 @@ public class RequestHelper {
 
         String result = null;
         try {
-            StringEntity httpEntity = new StringEntity(json);
+            StringEntity httpEntity = new StringEntity(json,Charset.forName("UTF-8"));
 
             httpEntity.setContentType("application/json");
             httpEntity.setContentEncoding("UTF-8");
@@ -192,7 +192,7 @@ public class RequestHelper {
             postMethod.addHeader("Content-type", "application/json; charset=utf-8");
             postMethod.setHeader("Accept", "application/json");
 
-//            postMethod.setEntity(new StringEntity(parameters, Charset.forName("UTF-8")));
+//            postMethod.setEntity(new StringEntity(json, Charset.forName("UTF-8")));
             postMethod.setEntity(httpEntity);
 
             response = httpClient.execute(postMethod);
