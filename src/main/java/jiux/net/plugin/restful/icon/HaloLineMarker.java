@@ -34,7 +34,10 @@ public class HaloLineMarker implements LineMarkerProvider {
             PsiAnnotation psiAnnotation = field.getAnnotation(anno);
             String controllerName = ((PsiClassImpl) field.getParent()).getName();
             PsiAnnotation annotation = ((PsiClassImpl) field.getParent()).getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
-            String requestMapping = annotation.getText();
+            String requestMapping = "";
+            if(annotation!=null){
+                requestMapping = annotation.getText();
+            }
             Pattern r = Pattern.compile("\"(.*)\"");
             Matcher m = r.matcher(requestMapping);
             if (m.find()) {

@@ -124,6 +124,9 @@ public class RestServicesNavigator extends AbstractProjectComponent
                     continue;
                 }
                 SimpleNode urlNode = Arrays.stream(controllerNode.getChildren()).filter(e -> e.getName().equals(url)).findFirst().orElse(null);
+                if(urlNode == null){
+                    continue;
+                }
                 myTree.setSelectedNode(myStructure.getMyTreeBuilder(),urlNode,true);
                 break;
             }
