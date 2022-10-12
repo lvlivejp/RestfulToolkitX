@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -356,6 +358,9 @@ public class PsiClassHelper {
     public Map<String, Object> assembleClassToMap(PsiClass psiClass, Project project, int recursiveCount) {
         Map<String, Object> map = new LinkedHashMap<>();
         PsiField[] fields = psiClass.getFields();
+        if(psiClass.getSuperClass() != null){
+            fields = ArrayUtils.addAll(fields,psiClass.getSuperClass().getFields());
+        }
         for (PsiField field : fields) {
             PsiType psiFieldType = field.getType();
             String typeName = psiFieldType.getPresentableText();
