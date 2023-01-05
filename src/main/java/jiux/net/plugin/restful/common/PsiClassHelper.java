@@ -79,6 +79,7 @@ public class PsiClassHelper {
                 paramValue = Short.valueOf("1");
                 break;
             case "decimal":
+            case "bigdecimal":
                 return BigDecimal.ONE;
             case "string":
                 paramValue = "demoData";
